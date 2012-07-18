@@ -1,0 +1,213 @@
+<!-- HTA script to allow machines that are not joined to a domain to access 
+     Windows file shares with domain credentials.  It will atomatically prepend the 
+     domain to the username and then map several drives.  If a drive is already 
+     mapped, it is disconnected and then mapped for the current user.
+     
+     Version 1.0
+     Written by Vaughn Miller 7/11/2012 
+     
+     Currently setup to map the following drives : 
+     M:  =  \\gonzo.ad.messiah.edu\dept
+     O:  =  \\gonzo.ad.messiah.edu\users
+     W:  =  \\mcweb\messiahweb                         
+     ---------------------------------------------------------------------------------->
+
+
+<HTML>
+<HEAD>
+<TITLE>Connect Network Drives</title>
+<HTA:APPLICATION
+	ICON="EIPos.ico"
+     ApplicationName="MapDrives.HTA"
+     SingleInstance="Yes"
+     WindowsState="Normal"
+     Scroll="No"
+     Navigable="Yes"
+     MaximizeButton="No"
+     SysMenu="Yes"
+     Caption="Yes"
+     Icon="EIPos.ico"
+></HEAD>
+
+<SCRIPT LANGUAGE="VBScript">
+
+Sub Window_Onload
+  '# Size Window
+  sHorizontal = 440
+  sVertical = 175
+  Window.resizeTo sHorizontal, sVertical
+  '# Get Monitor Details
+  Set objWMIService = GetObject _
+    ("winmgmts:root\cimv2")
+  intHorizontal = sHorizontal *2
+  intVertical = sVertical *2
+  Set colItems = objWMIService.ExecQuery( _
+    "Select ScreenWidth, ScreenHeight from" _
+    & " Win32_DesktopMonitor", , 48)
+  For Each objItem In colItems
+    sWidth= objItem.ScreenWidth
+    sHeight = objItem.ScreenHeight
+    If sWidth > sHorizontal _
+      then intHorizontal = sWidth
+    If sHeight > sVertical _
+      then intVertical = sHeight
+  Next
+  Set objWMIService = Nothing
+  '# Center window on the screen
+  intLeft = (intHorizontal - sHorizontal) /2
+  intTop = (intVertical - sVertical) /2
+  Window.moveTo intLeft, intTop
+  '# default window content
+  window.location.href="#Top"
+End Sub
+
+
+Sub RunScript
+on Error Resume Next
+
+' *** variables
+' For each drive we define a letter, path and alias
+mDrive = "M:"
+strMRemoteShare = "\\gonzo.ad.messiah.edu\dept"
+strMDriveAlias = "Dept"
+
+oDrive = "O:"
+strORemoteShare = "\\gonzo.ad.messiah.edu\users"
+strODriveAlias = "Users"
+
+wDrive = "W:"
+strWRemoteShare = "\\mcweb\messiahweb"
+strWDriveAlias = "messiahweb"
+
+strDOMAIN = "messiah\"  'Domain to prepend to the username
+
+minUSRnamelength = 2
+minPASSwrdlength = 3
+
+
+' *** Map drive using the entered credentials
+
+strUsr = UsrnameArea.Value
+strPas = PasswordArea.Value
+
+Set objNetwork = CreateObject("WScript.Network")
+Set oShell = CreateObject("Shell.Application")
+
+ If Len(strUsr) >= minUSRnamelength then
+     strUsr = strDOMAIN & UCase(strUsr)  '<--- adds the domain before the username
+
+      if Len(strPas) >= minPASSwrdlength Then
+
+		Call ClearDrives ' Delete existing mappings if they exist
+         
+      ' *** Begin Drive mapping  ***
+         Err.Clear
+         objNetwork.MapNetworkDrive oDrive, strORemoteShare, False, strUsr, strPas
+         If Err.Number = 0 Then
+            oShell.NameSpace(oDrive).Self.Name = strODriveAlias
+         End If
+
+         Err.Clear
+         objNetwork.MapNetworkDrive mDrive, strMRemoteShare, False, strUsr, strPas
+          If Err.Number = 0 Then
+             oShell.NameSpace(mDrive).Self.Name = strMDriveAlias
+          End If
+
+         Err.Clear
+         objNetwork.MapNetworkDrive wDrive, strWRemoteShare, False, strUsr, strPas
+          If Err.Number = 0 Then
+             oShell.NameSpace(wDrive).Self.Name = strWDriveAlias
+          End If
+       ' *** End drive mapping  ***   
+          
+       ELSE 
+          Msgbox chr(34) & strPas & """  is an incorrect password !"
+          Exit Sub
+       End If
+ ELSE 
+    Msgbox chr(34) & strUsr & """  is an incorrect Username !"
+    Exit Sub
+ End If
+  ' Clean up the objects before exiting
+Set oShell = Nothing
+Set objNetwork = Nothing
+   Self.Close()
+End Sub
+
+
+Sub ClearDrives
+  ' Sub Routine to remove the drives if they are already mapped	
+  On Error Resume Next
+  mDrive = "M:"
+  oDrive = "O:"
+  wDrive = "W:"
+  Set objNetwork = CreateObject("WScript.Network")
+
+     ' *** Begin section to delete drive mappings ***
+         Set AllDrives = objNetwork.EnumNetworkDrives
+         
+         For i = 0 To AllDrives.Count - 1 Step 2 
+            If AllDrives.Item(i) = oDrive Then AlreadyConnected = True 
+         Next        
+         If AlreadyConnected = True then 
+            objNetwork.RemoveNetworkDrive oDrive
+         End If 
+
+         For i = 0 To AllDrives.Count - 1 Step 2 
+            If AllDrives.Item(i) = mDrive Then AlreadyConnected = True 
+         Next        
+         If AlreadyConnected = True then 
+            objNetwork.RemoveNetworkDrive mDrive
+         End If 
+
+         For i = 0 To AllDrives.Count - 1 Step 2 
+            If AllDrives.Item(i) = wDrive Then AlreadyConnected = True 
+         Next        
+         If AlreadyConnected = True then 
+            objNetwork.RemoveNetworkDrive wDrive
+         End If 
+      ' *** End section to delete drive mappings  
+End Sub
+
+
+Sub DisconnectDrives  ' Calls ClearDrives subroutine and then closes the window
+	Call ClearDrives
+    Set oShell = Nothing
+    Set objNetwork = Nothing
+	Self.close()
+End Sub
+
+
+Sub CancelScript
+   Set oShell = Nothing
+   Set objNetwork = Nothing
+   Self.Close()
+End Sub
+
+</SCRIPT>
+
+
+<BODY STYLE="font:14 pt arial; color:white; filter:progid:DXImageTransform.Microsoft.Gradient(GradientType=1, StartColorStr='#000000', EndColorStr='#0000FF')">
+<a name="Top"></a><CENTER>
+  <table border="0" cellpadding="0" cellspacing="0"><font size="2" color="black" face="Arial">
+    <tr>
+      <td height="30">
+        <p align="right">Your Username</p>
+      </td>
+      <td height="30">&nbsp;&nbsp; <input type="text" name="UsrnameArea" size="30"></td></tr>
+    <tr>
+      <td height="30">
+        <p align="right">Password</p>
+      </td>
+      <td height="30">&nbsp;&nbsp; <input type="password" name="PasswordArea" size="30"></td></tr>
+  </table><BR>
+<HR color="#0000FF">
+ <Input id=runbutton class="button" type="button" value=" Map Drives " name="run_button"  onClick="RunScript">
+    &nbsp;
+ <Input id=runbutton class="button" type="button" value=" Disconnect Drives " name="dis_button"  onClick="DisconnectDrives">
+    &nbsp;
+ <Input id=runbutton class="button" type="button" value="Cancel" name="cancel_button"  onClick="CancelScript">
+</CENTER>
+</BODY>
+
+</HTML>
