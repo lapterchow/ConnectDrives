@@ -4,4 +4,11 @@ credentials.  This is useful for mapping drives when a computer is not
 joined to a Domain.  The domain name is automatically prepended to the 
 username supplied by the user.
 
+If the specified drives are already mapped, they will be disconnected 
+before being remapped.  This allows you to easily remap the same drives
+with different user credentials if needed.
 
+There is also a button to disconnect the drives.  Useful if this is a 
+common shared machine with multiple users, a user can disconnect their
+drives before walking away from the computer.  User credentials do not need
+to be specified to disconnect drives.
