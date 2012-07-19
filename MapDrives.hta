@@ -67,17 +67,32 @@ on Error Resume Next
 
 ' *** variables
 ' For each drive we define a letter, path and alias
-mDrive = "M:"
-strMRemoteShare = "\\gonzo.ad.messiah.edu\dept"
-strMDriveAlias = "Dept"
+'mDrive = "M:"
+'strMRemoteShare = "\\gonzo.ad.messiah.edu\dept"
+'strMDriveAlias = "Dept"
 
-oDrive = "O:"
-strORemoteShare = "\\gonzo.ad.messiah.edu\users"
-strODriveAlias = "Users"
+'oDrive = "O:"
+'strORemoteShare = "\\gonzo.ad.messiah.edu\users"
+'strODriveAlias = "Users"
 
-wDrive = "W:"
-strWRemoteShare = "\\mcweb\messiahweb"
-strWDriveAlias = "messiahweb"
+'wDrive = "W:"
+'strWRemoteShare = "\\mcweb\messiahweb"
+'strWDriveAlias = "messiahweb"
+
+
+'Setup array with drive definitions.
+dim arrDrives(2,2)
+arrDrives(0,0) = "M:"
+arrDrives(0,1) = "\\gonzo.ad.messiah.edu\dept"
+arrDrives(0,2) = "Dept"
+
+arrDrives(1,0) = "O:"
+arrDrives(1,1) = "\\gonzo.ad.messiah.edu\users"
+arrDrives(1,2) = "Users"
+
+arrDrives(2,0) = "W:"
+arrDrives(2,1) = "\\mcweb\messiahweb"
+arrDrives(2,2) = "messiahweb"
 
 strDOMAIN = "messiah\"  'Domain to prepend to the username
 
@@ -102,21 +117,21 @@ Set oShell = CreateObject("Shell.Application")
          
       ' *** Begin Drive mapping  ***
          Err.Clear
-         objNetwork.MapNetworkDrive oDrive, strORemoteShare, False, strUsr, strPas
+         objNetwork.MapNetworkDrive arrDrives(1,0), arrDrives(1,1), False, strUsr, strPas
          If Err.Number = 0 Then
-            oShell.NameSpace(oDrive).Self.Name = strODriveAlias
+            oShell.NameSpace(oDrive).Self.Name = arrDrives(1,2)
          End If
 
          Err.Clear
-         objNetwork.MapNetworkDrive mDrive, strMRemoteShare, False, strUsr, strPas
+         objNetwork.MapNetworkDrive arrDrives(0,0), arrDrives(0,1), False, strUsr, strPas
           If Err.Number = 0 Then
-             oShell.NameSpace(mDrive).Self.Name = strMDriveAlias
+             oShell.NameSpace(mDrive).Self.Name = arrDrives(1,2)
           End If
 
          Err.Clear
-         objNetwork.MapNetworkDrive wDrive, strWRemoteShare, False, strUsr, strPas
+         objNetwork.MapNetworkDrive arrDrives(2,0), arrDrives(2,1), False, strUsr, strPas
           If Err.Number = 0 Then
-             oShell.NameSpace(wDrive).Self.Name = strWDriveAlias
+             oShell.NameSpace(wDrive).Self.Name = arrDrives(2,2)
           End If
        ' *** End drive mapping  ***   
           
