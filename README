@@ -1,0 +1,7 @@
+This script will prompt the user for their username and password and
+will then map the drives defined in the script using the specified 
+credentials.  This is useful for mapping drives when a computer is not 
+joined to a Domain.  The domain name is automatically prepended to the 
+username supplied by the user.
+
+
