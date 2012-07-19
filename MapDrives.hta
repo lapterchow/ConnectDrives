@@ -31,6 +31,20 @@
 
 <SCRIPT LANGUAGE="VBScript">
 
+dim arrDrives(2,2)
+
+arrDrives(0,0) = "M:"
+arrDrives(0,1) = "\\gonzo.ad.messiah.edu\dept"
+arrDrives(0,2) = "Dept"
+
+arrDrives(1,0) = "O:"
+arrDrives(1,1) = "\\gonzo.ad.messiah.edu\users"
+arrDrives(1,2) = "Users"
+
+arrDrives(2,0) = "W:"
+arrDrives(2,1) = "\\mcweb\messiahweb"
+arrDrives(2,2) = "messiahweb"
+
 Sub Window_Onload
   '# Size Window
   sHorizontal = 440
@@ -64,35 +78,6 @@ End Sub
 
 Sub RunScript
 on Error Resume Next
-
-' *** variables
-' For each drive we define a letter, path and alias
-'mDrive = "M:"
-'strMRemoteShare = "\\gonzo.ad.messiah.edu\dept"
-'strMDriveAlias = "Dept"
-
-'oDrive = "O:"
-'strORemoteShare = "\\gonzo.ad.messiah.edu\users"
-'strODriveAlias = "Users"
-
-'wDrive = "W:"
-'strWRemoteShare = "\\mcweb\messiahweb"
-'strWDriveAlias = "messiahweb"
-
-
-'Setup array with drive definitions.
-dim arrDrives(2,2)
-arrDrives(0,0) = "M:"
-arrDrives(0,1) = "\\gonzo.ad.messiah.edu\dept"
-arrDrives(0,2) = "Dept"
-
-arrDrives(1,0) = "O:"
-arrDrives(1,1) = "\\gonzo.ad.messiah.edu\users"
-arrDrives(1,2) = "Users"
-
-arrDrives(2,0) = "W:"
-arrDrives(2,1) = "\\mcweb\messiahweb"
-arrDrives(2,2) = "messiahweb"
 
 strDOMAIN = "messiah\"  'Domain to prepend to the username
 
@@ -153,33 +138,30 @@ End Sub
 Sub ClearDrives
   ' Sub Routine to remove the drives if they are already mapped	
   On Error Resume Next
-  mDrive = "M:"
-  oDrive = "O:"
-  wDrive = "W:"
   Set objNetwork = CreateObject("WScript.Network")
 
      ' *** Begin section to delete drive mappings ***
          Set AllDrives = objNetwork.EnumNetworkDrives
          
          For i = 0 To AllDrives.Count - 1 Step 2 
-            If AllDrives.Item(i) = oDrive Then AlreadyConnected = True 
+            If AllDrives.Item(i) = arrDrives(1,0) Then AlreadyConnected = True 
          Next        
          If AlreadyConnected = True then 
-            objNetwork.RemoveNetworkDrive oDrive
+            objNetwork.RemoveNetworkDrive arrDrives(1,0)
          End If 
 
          For i = 0 To AllDrives.Count - 1 Step 2 
-            If AllDrives.Item(i) = mDrive Then AlreadyConnected = True 
+            If AllDrives.Item(i) = arrDrives(0,0) Then AlreadyConnected = True 
          Next        
          If AlreadyConnected = True then 
-            objNetwork.RemoveNetworkDrive mDrive
+            objNetwork.RemoveNetworkDrive arrDrives(0,0)
          End If 
 
          For i = 0 To AllDrives.Count - 1 Step 2 
-            If AllDrives.Item(i) = wDrive Then AlreadyConnected = True 
+            If AllDrives.Item(i) = arrDrives(2,0) Then AlreadyConnected = True 
          Next        
          If AlreadyConnected = True then 
-            objNetwork.RemoveNetworkDrive wDrive
+            objNetwork.RemoveNetworkDrive arrDrives(2,0)
          End If 
       ' *** End section to delete drive mappings  
 End Sub
