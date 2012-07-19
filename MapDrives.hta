@@ -3,7 +3,7 @@
      domain to the username and then map several drives.  If a drive is already 
      mapped, it is disconnected and then mapped for the current user.
      
-     Version 1.0
+     Version 1.0.1
      Written by Vaughn Miller 7/11/2012 
      
      Currently setup to map the following drives : 
@@ -31,6 +31,7 @@
 
 <SCRIPT LANGUAGE="VBScript">
 
+' *** Define Drive Mappings ***
 dim arrDrives(2,2)
 
 arrDrives(0,0) = "M:"
@@ -44,6 +45,7 @@ arrDrives(1,2) = "Users"
 arrDrives(2,0) = "W:"
 arrDrives(2,1) = "\\mcweb\messiahweb"
 arrDrives(2,2) = "messiahweb"
+' *** End Drive Map Definitions ***
 
 Sub Window_Onload
   '# Size Window
