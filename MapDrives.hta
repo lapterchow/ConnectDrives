@@ -79,21 +79,21 @@ End Sub
 
 
 Sub RunScript
-on Error Resume Next
+ on Error Resume Next
 
-strDOMAIN = "messiah\"  'Domain to prepend to the username
+ strDOMAIN = "messiah\"  'Domain to prepend to the username
 
-minUSRnamelength = 2
-minPASSwrdlength = 3
+ minUSRnamelength = 2
+ minPASSwrdlength = 3
 
 
 ' *** Map drive using the entered credentials
 
-strUsr = UsrnameArea.Value
-strPas = PasswordArea.Value
+ strUsr = UsrnameArea.Value
+ strPas = PasswordArea.Value
 
-Set objNetwork = CreateObject("WScript.Network")
-Set oShell = CreateObject("Shell.Application")
+ Set objNetwork = CreateObject("WScript.Network")
+ Set oShell = CreateObject("Shell.Application")
 
  If Len(strUsr) >= minUSRnamelength then
      strUsr = strDOMAIN & UCase(strUsr)  '<--- adds the domain before the username
@@ -102,7 +102,7 @@ Set oShell = CreateObject("Shell.Application")
 
 		Call ClearDrives ' Delete existing mappings if they exist
          
-      ' *** Begin Drive mapping  ***
+         '***** Begin Drive mapping  *****
          Err.Clear
          objNetwork.MapNetworkDrive arrDrives(1,0), arrDrives(1,1), False, strUsr, strPas
          If Err.Number = 0 Then
@@ -120,7 +120,7 @@ Set oShell = CreateObject("Shell.Application")
           If Err.Number = 0 Then
              oShell.NameSpace(wDrive).Self.Name = arrDrives(2,2)
           End If
-       ' *** End drive mapping  ***   
+          '***** End drive mapping  *****   
           
        ELSE 
           Msgbox chr(34) & strPas & """  is an incorrect password !"
@@ -131,9 +131,9 @@ Set oShell = CreateObject("Shell.Application")
     Exit Sub
  End If
   ' Clean up the objects before exiting
-Set oShell = Nothing
-Set objNetwork = Nothing
-   Self.Close()
+ Set oShell = Nothing
+ Set objNetwork = Nothing
+ Self.Close()
 End Sub
 
 
@@ -142,30 +142,30 @@ Sub ClearDrives
   On Error Resume Next
   Set objNetwork = CreateObject("WScript.Network")
 
-     ' *** Begin section to delete drive mappings ***
-         Set AllDrives = objNetwork.EnumNetworkDrives
+  '***** Begin section to delete drive mappings ***
+  Set AllDrives = objNetwork.EnumNetworkDrives
          
-         For i = 0 To AllDrives.Count - 1 Step 2 
-            If AllDrives.Item(i) = arrDrives(1,0) Then AlreadyConnected = True 
-         Next        
-         If AlreadyConnected = True then 
-            objNetwork.RemoveNetworkDrive arrDrives(1,0)
-         End If 
+  For i = 0 To AllDrives.Count - 1 Step 2 
+     If AllDrives.Item(i) = arrDrives(1,0) Then AlreadyConnected = True 
+  Next        
+  If AlreadyConnected = True then 
+     objNetwork.RemoveNetworkDrive arrDrives(1,0)
+  End If 
 
-         For i = 0 To AllDrives.Count - 1 Step 2 
-            If AllDrives.Item(i) = arrDrives(0,0) Then AlreadyConnected = True 
-         Next        
-         If AlreadyConnected = True then 
-            objNetwork.RemoveNetworkDrive arrDrives(0,0)
-         End If 
+  For i = 0 To AllDrives.Count - 1 Step 2 
+     If AllDrives.Item(i) = arrDrives(0,0) Then AlreadyConnected = True 
+  Next        
+  If AlreadyConnected = True then 
+     objNetwork.RemoveNetworkDrive arrDrives(0,0)
+  End If 
 
-         For i = 0 To AllDrives.Count - 1 Step 2 
-            If AllDrives.Item(i) = arrDrives(2,0) Then AlreadyConnected = True 
-         Next        
-         If AlreadyConnected = True then 
-            objNetwork.RemoveNetworkDrive arrDrives(2,0)
-         End If 
-      ' *** End section to delete drive mappings  
+  For i = 0 To AllDrives.Count - 1 Step 2 
+     If AllDrives.Item(i) = arrDrives(2,0) Then AlreadyConnected = True 
+  Next        
+  If AlreadyConnected = True then 
+     objNetwork.RemoveNetworkDrive arrDrives(2,0)
+  End If 
+  '***** End section to delete drive mappings  
 End Sub
 
 
