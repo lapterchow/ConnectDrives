@@ -97,31 +97,22 @@ Sub RunScript
  Set oShell = CreateObject("Shell.Application")
 
  If Len(strUsr) >= minUSRnamelength then
-     strUsr = strDOMAIN & UCase(strUsr)  '<--- adds the domain before the username
+    strUsr = strDOMAIN & UCase(strUsr)  '<--- adds the domain before the username
 
-      if Len(strPas) >= minPASSwrdlength Then
+    if Len(strPas) >= minPASSwrdlength Then
 
-		Call ClearDrives ' Delete existing mappings if they exist
+	   Call ClearDrives ' Delete existing mappings if they exist
          
-         '***** Begin Drive mapping  *****
-         Err.Clear
-         objNetwork.MapNetworkDrive arrDrives(1,0), arrDrives(1,1), False, strUsr, strPas
-         If Err.Number = 0 Then
-            oShell.NameSpace(oDrive).Self.Name = arrDrives(1,2)
-         End If
+       '***** Begin Drive mapping  *****
 
-         Err.Clear
-         objNetwork.MapNetworkDrive arrDrives(0,0), arrDrives(0,1), False, strUsr, strPas
+       For n = 0 To intMaxDrives     'Loop through our array of drives 
+          Err.Clear
+          objNetwork.MapNetworkDrive arrDrives(n,0), arrDrives(n,1), False, strUsr, strPas
           If Err.Number = 0 Then
-             oShell.NameSpace(mDrive).Self.Name = arrDrives(1,2)
-          End If
-
-         Err.Clear
-         objNetwork.MapNetworkDrive arrDrives(2,0), arrDrives(2,1), False, strUsr, strPas
-          If Err.Number = 0 Then
-             oShell.NameSpace(wDrive).Self.Name = arrDrives(2,2)
-          End If
-          '***** End drive mapping  *****   
+             oShell.NameSpace(arrDrives(n,0)).Self.Name = arrDrives(n,2)
+          End If 
+       Next                  
+       '***** End Drive Mapping *****
           
        ELSE 
           Msgbox chr(34) & strPas & """  is an incorrect password !"
