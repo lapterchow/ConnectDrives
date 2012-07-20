@@ -3,8 +3,8 @@
      domain to the username and then map several drives.  If a drive is already 
      mapped, it is disconnected and then mapped for the current user.
      
-     Version 1.0.1
-     Written by Vaughn Miller 7/11/2012 
+     Version 1.0.2
+     Written by Vaughn Miller 7/20/2012 
      
      Currently setup to map the following drives : 
      M:  =  \\gonzo.ad.messiah.edu\dept
@@ -26,7 +26,6 @@
      MaximizeButton="No"
      SysMenu="Yes"
      Caption="Yes"
-     Icon="EIPos.ico"
 ></HEAD>
 
 <SCRIPT LANGUAGE="VBScript">
@@ -80,63 +79,56 @@ End Sub
 
 
 Sub RunScript
- on Error Resume Next
+   on Error Resume Next
 
- strDOMAIN = "messiah\"  'Domain to prepend to the username
+   strDOMAIN = "messiah\"  'Domain to prepend to the username
 
- minUSRnamelength = 2
- minPASSwrdlength = 3
+   minUSRnamelength = 2
+   minPASSwrdlength = 3
 
+   strUsr = UsrnameArea.Value
+   strPas = PasswordArea.Value
 
-' *** Map drive using the entered credentials
+   Set objNetwork = CreateObject("WScript.Network")
+   Set oShell = CreateObject("Shell.Application")
 
- strUsr = UsrnameArea.Value
- strPas = PasswordArea.Value
+   If Len(strUsr) >= minUSRnamelength then
+      strUsr = strDOMAIN & UCase(strUsr)  '<--- adds the domain before the username
 
- Set objNetwork = CreateObject("WScript.Network")
- Set oShell = CreateObject("Shell.Application")
-
- If Len(strUsr) >= minUSRnamelength then
-    strUsr = strDOMAIN & UCase(strUsr)  '<--- adds the domain before the username
-
-    if Len(strPas) >= minPASSwrdlength Then
-
-	   Call ClearDrives ' Delete existing mappings if they exist
+      if Len(strPas) >= minPASSwrdlength Then
+         Call ClearDrives ' Delete existing mappings if they exist
          
-       '***** Begin Drive mapping  *****
-
-       For n = 0 To intMaxDrives     'Loop through our array of drives 
-          Err.Clear
-          objNetwork.MapNetworkDrive arrDrives(n,0), arrDrives(n,1), False, strUsr, strPas
-          If Err.Number = 0 Then
-             oShell.NameSpace(arrDrives(n,0)).Self.Name = arrDrives(n,2)
-          End If 
-       Next                  
-       '***** End Drive Mapping *****
+         '***** Begin Drive mapping  *****
+         For n = 0 To intMaxDrives     'Loop through our array of drives 
+            Err.Clear
+            objNetwork.MapNetworkDrive arrDrives(n,0), arrDrives(n,1), False, strUsr, strPas
+            If Err.Number = 0 Then
+               oShell.NameSpace(arrDrives(n,0)).Self.Name = arrDrives(n,2)
+            End If 
+         Next                  
+         '***** End Drive Mapping *****
           
-       ELSE 
-          Msgbox chr(34) & strPas & """  is an incorrect password !"
-          Exit Sub
-       End If
- ELSE 
-    Msgbox chr(34) & strUsr & """  is an incorrect Username !"
-    Exit Sub
- End If
-  ' Clean up the objects before exiting
- Set oShell = Nothing
- Set objNetwork = Nothing
- Self.Close()
+         ELSE 
+            Msgbox chr(34) & strPas & """  is an incorrect password !"
+            Exit Sub
+         End If
+   ELSE 
+      Msgbox chr(34) & strUsr & """  is an incorrect Username !"
+      Exit Sub
+   End If
+    ' Clean up the objects before exiting
+   Set oShell = Nothing
+   Set objNetwork = Nothing
+   Self.Close()
 End Sub
 
 
-Sub ClearDrives
-  ' Sub Routine to remove the drives if they are already mapped	
+Sub ClearDrives      ' Sub Routine to remove the drives if they are already mapped	
   On Error Resume Next
   Set objNetwork = CreateObject("WScript.Network")
 
   '***** Begin section to delete drive mappings ***
-  Set AllDrives = objNetwork.EnumNetworkDrives
-         
+  Set AllDrives = objNetwork.EnumNetworkDrives       
   For n = 0 To intMaxDrives     'Loop through our array of drives 
      For i = 0 To AllDrives.Count - 1 Step 2 
         If AllDrives.Item(i) = arrDrives(n,0) Then AlreadyConnected = True 
