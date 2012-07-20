@@ -47,6 +47,9 @@ arrDrives(2,1) = "\\mcweb\messiahweb"
 arrDrives(2,2) = "messiahweb"
 ' *** End Drive Map Definitions ***
 
+strDOMAIN = "messiah\"  'Domain to prepend to the username
+
+
 Sub Window_Onload
   '# Size Window
   sHorizontal = 440
@@ -80,8 +83,6 @@ End Sub
 
 Sub RunScript
    on Error Resume Next
-
-   strDOMAIN = "messiah\"  'Domain to prepend to the username
 
    minUSRnamelength = 2
    minPASSwrdlength = 3
