@@ -135,7 +135,7 @@ Sub ClearDrives      ' Sub Routine to remove the drives if they are already mapp
         If AllDrives.Item(i) = arrDrives(n,0) Then AlreadyConnected = True 
      Next        
      If AlreadyConnected = True then 
-        objNetwork.RemoveNetworkDrive arrDrives(n,0)
+        objNetwork.RemoveNetworkDrive arrDrives(n,0), True, True
      End If 
   Next                  
   '***** End section to delete drive mappings  
